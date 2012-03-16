@@ -166,7 +166,7 @@ public:
             net_list[i].num_sinks = 0;
             net_list[i].node_block = NULL;
             net_list[i].node_block_pin = NULL;
-            net_list[i].is_global = (boolean)false;
+            net_list[i].is_global = (bool)false;
         }
 
         subblock_list.resize(block_count);
@@ -225,10 +225,6 @@ public:
     }
 
     void load_process_net(const string &label) {
-        /*
-        net_list[net_index].name = (char *)calloc(label.size() + 1, sizeof(char));
-        strcpy(net_list[net_index].name, label.c_str());
-        */
         net_list[net_index].name = label;
         net_map[label] = net_index;
     }
@@ -347,7 +343,7 @@ public:
     void map_process_global(const string &label) {
         for(int i = 0; i < net_count; i++) {
             if(label == net_list[i].name) {
-                net_list[i].is_global = (boolean)1;
+                net_list[i].is_global = (bool)1;
                 break;
             }
         }
