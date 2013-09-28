@@ -6,6 +6,8 @@ from cython.operator cimport dereference as deref
 
 cdef class cNetlistReader:
     cdef NetlistReader *thisptr
+    cdef object net_labels
+    cdef object global_labels
 
     def __cinit__(self, netlist_path):
         cdef string in_file = netlist_path
@@ -14,55 +16,19 @@ cdef class cNetlistReader:
     def parse(self):
         self.thisptr.parse()
 
-    property funcblock_count:
-        def __get__(self):
-            return self.thisptr.funcblock_count
-
-    property input_count:
-        def __get__(self):
-            return self.thisptr.input_count
-
-    property output_count:
-        def __get__(self):
-            return self.thisptr.output_count
-
-    property global_count:
-        def __get__(self):
-            return self.thisptr.global_count
-
-    property net_count:
-        def __get__(self):
-            return self.thisptr.net_count
-
-    property block_count:
-        def __get__(self):
-            return self.thisptr.block_count
-
-    property net_index:
-        def __get__(self):
-            return self.thisptr.net_index
-
-    property block_index:
-        def __get__(self):
-            return self.thisptr.block_index
-
     property net_labels:
         def __get__(self):
-            return self.thisptr.net_labels_
+            return [v for v in self.thisptr.net_labels_]
 
-    property net_label_map:
+    property global_labels:
         def __get__(self):
-            return self.thisptr.net_label_map_
+            return [v for v in self.thisptr.global_labels_]
 
-    property block_label_map:
+    property block_types:
         def __get__(self):
-            return self.thisptr.block_label_map_
+            return self.thisptr.block_types_
 
-    property net_to_block_indexes:
+    property block_label_to_net_labels:
         def __get__(self):
-            return self.thisptr.net_to_block_indexes_
-
-    property block_to_net_indexes:
-        def __get__(self):
-            return self.thisptr.block_to_net_indexes_
+            return self.thisptr.block_label_to_net_labels_
 

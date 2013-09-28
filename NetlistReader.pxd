@@ -30,13 +30,10 @@ cdef extern from "NetlistReader.hpp":
         int net_index
         int block_index
 
-        pin_class_map_t pin_class_map_
-        pin_class_reverse_map_t pin_class_reverse_map_
-        vector[string] net_labels_
-        net_label_map_t net_label_map_
-        block_label_map_t block_label_map_
-        net_to_block_indexes_t net_to_block_indexes_
-        block_to_net_indexes_t block_to_net_indexes_
+        map[string, vector[string]] block_label_to_net_labels_
+        set[string] net_labels_
+        set[string] global_labels_
+        vector[string] block_types_
 
         NetlistReader(string in_filename)
         void parse()
