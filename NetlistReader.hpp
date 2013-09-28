@@ -25,6 +25,8 @@ public:
     BlockLabelToNetLabels block_label_to_net_labels_;
     set<string> net_labels_;
     set<string> global_labels_;
+    vector<vector<int> > block_used_pins_;
+    vector<string> block_labels_;
     vector<string> block_types_;
     int funcblock_count;
     int input_count;
@@ -56,12 +58,13 @@ public:
         in_stream->seekg(0, ios::beg);
     }
 
+    /* Count pass: START */
     void process_funcblock(const string &funcblocktype,
             const string &label, const vector<string> &pins,
             const vector<SubBlock> &subblocks) {
         this->block_types_.push_back(funcblocktype);
         funcblock_count++;
-        process_block(label, pins);
+        this->process_block(label, pins);
     }
 
     void process_input(const string &label, const vector<string> &pins) {
@@ -84,12 +87,16 @@ public:
     }
 
     void process_block(const string &label, const vector<string> &pins) {
+        vector<int> used_pins;
         for(int i = 0; i < pins.size(); i++) {
             if(pins[i] != "open") {
                 this->block_label_to_net_labels_[label].push_back(pins[i]);
                 this->net_labels_.insert(pins[i]);
+                used_pins.push_back(i);
             }
         }
+        block_labels_.push_back(label);
+        this->block_used_pins_.push_back(used_pins);
         block_index++;
     }
     /* Count pass: END */

@@ -33,6 +33,8 @@ cdef extern from "NetlistReader.hpp":
         map[string, vector[string]] block_label_to_net_labels_
         set[string] net_labels_
         set[string] global_labels_
+        vector[vector[int]] block_used_pins_
+        vector[string] block_labels_
         vector[string] block_types_
 
         NetlistReader(string in_filename)

@@ -24,6 +24,14 @@ cdef class cNetlistReader:
         def __get__(self):
             return [v for v in self.thisptr.global_labels_]
 
+    property block_used_pins:
+        def __get__(self):
+            return self.thisptr.block_used_pins_
+
+    property block_labels:
+        def __get__(self):
+            return self.thisptr.block_labels_
+
     property block_types:
         def __get__(self):
             return self.thisptr.block_types_
