@@ -38,10 +38,6 @@ class VprNetParser {
     int cs;
     int have;
     int length;
-public:
-    int net_index;
-    int block_index;
-
     string funcblocktype;
     string label;
     vector<string> pin_list;
@@ -51,7 +47,12 @@ public:
     vector<SubBlock> subblocks;
     SubBlock *p_subblock;
     bool in_subblock_pin_list;
+public:
+    int net_index;
+    int block_index;
+
     map<string, vector<string> > block_label_to_net_labels_;
+    vector<map<string, vector<int> > > block_sub_blocks_;
     set<string> net_labels_;
     set<string> global_labels_;
     vector<vector<int> > block_used_pins_;
@@ -115,6 +116,21 @@ public:
         this->block_used_pins_.push_back(used_pins);
         this->block_types_.insert(funcblocktype);
         this->block_type_.push_back(funcblocktype);
+        map<string, vector<int> > sub_blocks;
+        for(int i = 0; i < this->subblocks.size(); i++) {
+            vector<int> used_pins;
+            SubBlock const &sub_block = this->subblocks[i];
+            for(int j = 0; j < sub_block.pins.size(); j++) {
+                if(this->subblocks[i].pins[j] != "open") {
+                    used_pins.push_back(j);
+                }
+            }
+            if(sub_block.clock_pin != "open") {
+                used_pins.push_back(sub_block.pins.size());
+            }
+            sub_blocks[sub_block.label] = used_pins;
+        }
+        this->block_sub_blocks_.push_back(sub_blocks);
         block_index++;
     }
 
@@ -145,5 +161,4 @@ public:
         in_file.close();
     }
 };
-
 #endif
