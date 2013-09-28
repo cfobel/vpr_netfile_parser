@@ -1,7 +1,7 @@
-#include "VPRNetParser.hpp"
+#include "VprNetParser.hpp"
 
 %%{
-    machine VPRNetParser;
+    machine VprNetParser;
 
     action start_line {
         ls = fpc;
@@ -162,7 +162,7 @@
 /* Regal data: end ***********************************/
 
 
-void VPRNetParser::init() {
+void VprNetParser::init() {
     buf = &buf_vector[0];
     _BUFSIZE = buf_vector.size();
 
@@ -170,7 +170,7 @@ void VPRNetParser::init() {
 }
 
 
-void VPRNetParser::parse(std::istream &in_stream) {
+void VprNetParser::ragel_parse(std::istream &in_stream) {
     bool done = false;
     int i = 0;
     have = 0;
@@ -196,7 +196,7 @@ void VPRNetParser::parse(std::istream &in_stream) {
         } else {
             %% write exec;
 
-            if ( cs == VPRNetParser_error ) {
+            if ( cs == VprNetParser_error ) {
                 /* Machine failed before finding a token. */
                 cerr << "PARSE ERROR" << endl;
                 exit(1);
