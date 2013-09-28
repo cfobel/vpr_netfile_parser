@@ -1,1 +1,14 @@
-VPR netlist parser written using Ragel: http://www.complang.org/ragel/
+Overview
+========
+
+VPR netlist parser written using [Ragel] [1].
+
+
+Cython extension
+================
+
+This library includes a Cython extension type, `cVprNetFileParser`, which wraps
+an instance of the C++ `VprNetFileParser` class.
+
+
+[1]: http://www.complang.org/ragel
