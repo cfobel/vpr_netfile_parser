@@ -206,7 +206,15 @@ public:
             for(; block_net_iter != block_net_labels.end(); block_net_iter++) {
                 int net_index = net_label_to_index[*block_net_iter];
                 int block_index = block_label_to_index[block_nets_iter->first];
-                net2block_ids[net_index].push_back(block_index);
+                /*
+                 * Only process the net if it's not a global net, or if
+                 * `include_global` is set to `true`.
+                 */
+                if(include_global ||
+                   this->global_labels_.find(*block_net_iter) ==
+                   this->global_labels_.end()) {
+                    net2block_ids[net_index].push_back(block_index);
+                }
             }
         }
 
