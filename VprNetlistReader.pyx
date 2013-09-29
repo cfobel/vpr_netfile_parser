@@ -4,6 +4,8 @@ from libcpp.string cimport string
 from cython.operator cimport dereference as deref
 from VprNetlistReader cimport VprNetFileParser
 
+from collections import OrderedDict
+
 
 cdef class cSubBlock:
     cdef SubBlock *thisptr
@@ -46,8 +48,8 @@ cdef class cVprNetFileParser:
         # Cache block-sub-blocks map to improve performance of
         # `block_sub_blocks` property lookup.
         self._block_sub_blocks = self.thisptr.block_sub_blocks_
-        self._net_labels = set([v for v in self.thisptr.net_labels_])
-        self._global_labels = set([v for v in self.thisptr.global_labels_])
+        self._net_labels = [v for v in self.thisptr.net_labels_]
+        self._global_labels = [v for v in self.thisptr.global_labels_]
 
     property block_sub_blocks:
         def __get__(self):
@@ -79,4 +81,32 @@ cdef class cVprNetFileParser:
 
     property block_label_to_net_labels:
         def __get__(self):
-            return self.thisptr.block_label_to_net_labels_
+            return OrderedDict([(k, v) for k, v in  self.thisptr.block_label_to_net_labels_])
+
+    def net_label_to_index(self):
+        return OrderedDict([(v, i) for i, v in enumerate(self.net_labels)])
+
+    def block_label_to_index(self):
+        return OrderedDict([(v, i) for i, v in enumerate(self.block_labels)])
+
+    def block_to_net_ids(self, include_global=True):
+        b2n_labels = self.block_label_to_net_labels
+        net_label_to_index = self.net_label_to_index()
+        return [[net_label_to_index[n]
+                 for n in b2n_labels[block_label]
+                 if include_global or (n not in self.global_labels)]
+                for i, block_label in enumerate(self.block_labels)]
+
+    def net_to_block_ids(self, include_global=True):
+        net_to_block_indexes = OrderedDict()
+        for i, block_net_ids in enumerate(self.block_to_net_ids(include_global)):
+            for net_id in block_net_ids:
+                net_block_ids = net_to_block_indexes.setdefault(net_id, [])
+                net_block_ids.append(i)
+        return zip(*sorted(net_to_block_indexes.items()))[1]
+
+    def block_ids_by_type(self):
+        block_ids_by_type = OrderedDict([(k, []) for k in self.block_types])
+        for block_id, block_type in enumerate(self.block_type):
+            block_ids_by_type[block_type].append(block_id)
+        return block_ids_by_type
