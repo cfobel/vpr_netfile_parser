@@ -1,5 +1,5 @@
 from nose.tools import eq_
-from VprNetlistReader import cVprNetFileParser
+from vpr_netfile_parser.VprNetParser import cVprNetFileParser
 
 
 def test_block_to_net_ids():

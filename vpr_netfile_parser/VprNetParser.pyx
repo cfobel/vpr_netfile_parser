@@ -3,7 +3,7 @@ from libcpp.vector cimport vector
 from libcpp.map cimport map
 from libcpp.string cimport string
 from cython.operator cimport dereference as deref
-from VprNetlistReader cimport VprNetFileParser
+from VprNetParser cimport VprNetFileParser
 
 from collections import OrderedDict
 
