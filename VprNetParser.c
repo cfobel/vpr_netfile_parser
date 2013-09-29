@@ -339,8 +339,8 @@ static const int VprNetParser_en_main = 1;
 #line 162 "VprNetParser.rl"
 /* Regal data: end ***********************************/
 
-
-void VprNetParser::init() {
+template <typename T>
+void VprNetParser<T>::init() {
     buf = &buf_vector[0];
     _BUFSIZE = buf_vector.size();
 
@@ -354,7 +354,8 @@ void VprNetParser::init() {
 }
 
 
-void VprNetParser::ragel_parse(std::istream &in_stream) {
+template <typename T>
+void VprNetParser<T>::ragel_parse(std::istream &in_stream) {
     bool done = false;
     int i = 0;
     have = 0;
@@ -379,7 +380,7 @@ void VprNetParser::ragel_parse(std::istream &in_stream) {
             done = true;
         } else {
             
-#line 383 "VprNetParser.c"
+#line 384 "VprNetParser.c"
 	{
 	int _klen;
 	unsigned int _trans;
@@ -603,7 +604,7 @@ _match:
         label = string(label_start, p - label_start);
     }
 	break;
-#line 607 "VprNetParser.c"
+#line 608 "VprNetParser.c"
 		}
 	}
 
@@ -654,7 +655,7 @@ _again:
         te = p;
     }
 	break;
-#line 658 "VprNetParser.c"
+#line 659 "VprNetParser.c"
 		}
 	}
 	}
@@ -662,7 +663,7 @@ _again:
 	_out: {}
 	}
 
-#line 198 "VprNetParser.rl"
+#line 199 "VprNetParser.rl"
 
             if ( cs == VprNetParser_error ) {
                 /* Machine failed before finding a token. */
@@ -681,3 +682,8 @@ _again:
         }
     }
 }
+
+template void VprNetParser<int>::init();
+template void VprNetParser<int>::ragel_parse(std::istream &in_stream);
+template void VprNetParser<unsigned int>::init();
+template void VprNetParser<unsigned int>::ragel_parse(std::istream &in_stream);

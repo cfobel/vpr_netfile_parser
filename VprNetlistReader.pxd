@@ -11,31 +11,25 @@ cdef extern from "VprNetParser.hpp":
         string clock_pin
 
 
-    cdef cppclass VprNetFileParser:
-        int funcblock_count
-        int input_count
-        int output_count
-        int global_count
-
-        int net_count
-        int block_count
-
-        int net_index
-        int block_index
+    cdef cppclass VprNetFileParser[T]:
+        T funcblock_count
+        T input_count
+        T output_count
+        T global_count
 
         map[string, vector[string]] block_label_to_net_labels_
         c_set[string] net_labels_
         c_set[string] global_labels_
-        vector[map[string, vector[int]]] block_sub_blocks_
-        vector[vector[int]] block_used_pins_
+        vector[map[string, vector[T]]] block_sub_blocks_
+        vector[vector[T]] block_used_pins_
         vector[string] block_labels_
         vector[string] block_type_
         c_set[string] block_types_
-        vector[vector[int]] net_to_block_ids(bint include_global)
-        vector[vector[int]] block_to_net_ids(bint include_global)
-        map[string, int] net_label_to_index()
-        map[string, int] block_label_to_index()
-        map[string, vector[int]] block_ids_by_type()
+        vector[vector[T]] net_to_block_ids(bint include_global)
+        vector[vector[T]] block_to_net_ids(bint include_global)
+        map[string, T] net_label_to_index()
+        map[string, T] block_label_to_index()
+        map[string, vector[T]] block_ids_by_type()
 
         VprNetFileParser(string in_filename)
         void init()

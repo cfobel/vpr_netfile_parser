@@ -161,8 +161,8 @@
 %% write data nofinal;
 /* Regal data: end ***********************************/
 
-
-void VprNetParser::init() {
+template <typename T>
+void VprNetParser<T>::init() {
     buf = &buf_vector[0];
     _BUFSIZE = buf_vector.size();
 
@@ -170,7 +170,8 @@ void VprNetParser::init() {
 }
 
 
-void VprNetParser::ragel_parse(std::istream &in_stream) {
+template <typename T>
+void VprNetParser<T>::ragel_parse(std::istream &in_stream) {
     bool done = false;
     int i = 0;
     have = 0;
@@ -213,3 +214,8 @@ void VprNetParser::ragel_parse(std::istream &in_stream) {
         }
     }
 }
+
+template void VprNetParser<int>::init();
+template void VprNetParser<int>::ragel_parse(std::istream &in_stream);
+template void VprNetParser<unsigned int>::init();
+template void VprNetParser<unsigned int>::ragel_parse(std::istream &in_stream);

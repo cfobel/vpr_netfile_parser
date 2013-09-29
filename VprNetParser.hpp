@@ -33,6 +33,7 @@ inline map<A, B> reverse_map(C &input) {
 }
 
 
+template <typename T>
 class VprNetParser {
     void ragel_parse(std::istream &in_stream);
     vector<char> buf_vector;
@@ -64,18 +65,18 @@ public:
     int block_index;
 
     map<string, vector<string> > block_label_to_net_labels_;
-    vector<map<string, vector<int> > > block_sub_blocks_;
+    vector<map<string, vector<T> > > block_sub_blocks_;
     set<string> net_labels_;
     set<string> global_labels_;
-    vector<vector<int> > block_used_pins_;
+    vector<vector<T> > block_used_pins_;
     vector<string> block_labels_;
     set<string> block_types_;
     vector<string> block_type_;
 
-    int funcblock_count_;
-    int input_count_;
-    int output_count_;
-    int global_count_;
+    T funcblock_count_;
+    T input_count_;
+    T output_count_;
+    T global_count_;
 
     VprNetParser() : block_index(0), net_index(0), funcblock_count_(0),
                      input_count_(0), output_count_(0), global_count_(0) {
@@ -116,7 +117,7 @@ public:
     }
 
     virtual void process_block() {
-        vector<int> used_pins;
+        vector<T> used_pins;
         for(int i = 0; i < pin_list.size(); i++) {
             if(pin_list[i] != "open") {
                 this->block_label_to_net_labels_[label].push_back(pin_list[i]);
@@ -128,9 +129,9 @@ public:
         this->block_used_pins_.push_back(used_pins);
         this->block_types_.insert(funcblocktype);
         this->block_type_.push_back(funcblocktype);
-        map<string, vector<int> > sub_blocks;
+        map<string, vector<T> > sub_blocks;
         for(int i = 0; i < this->subblocks.size(); i++) {
-            vector<int> used_pins;
+            vector<T> used_pins;
             SubBlock const &sub_block = this->subblocks[i];
             for(int j = 0; j < sub_block.pins.size(); j++) {
                 if(this->subblocks[i].pins[j] != "open") {
@@ -155,19 +156,19 @@ public:
         global_count_ = 0;
     }
 
-    map<string, int> net_label_to_index() {
-        return reverse_map<string, int>(this->net_labels_);
+    map<string, T> net_label_to_index() {
+        return reverse_map<string, T>(this->net_labels_);
     }
 
-    map<string, int> block_label_to_index() {
-        return reverse_map<string, int>(this->block_labels_);
+    map<string, T> block_label_to_index() {
+        return reverse_map<string, T>(this->block_labels_);
     }
 
-    vector<vector<int> > block_to_net_ids(bool include_global=true) {
+    vector<vector<T> > block_to_net_ids(bool include_global=true) {
         map<string, vector<string> > &b2n_labels = this->block_label_to_net_labels_;
-        map<string, int> net_label_to_index = this->net_label_to_index();
+        map<string, T> net_label_to_index = this->net_label_to_index();
 
-        vector<vector<int> > b2n_ids(this->block_labels_.size());
+        vector<vector<T> > b2n_ids(this->block_labels_.size());
 
         vector<string>::iterator block_iter = this->block_labels_.begin();
         for(int i = 0; block_iter != this->block_labels_.end(); block_iter++,
@@ -190,14 +191,14 @@ public:
         return b2n_ids;
     }
 
-    vector<vector<int> > net_to_block_ids(bool include_global=true) {
-        vector<vector<int> > net2block_ids(this->net_labels_.size());
+    vector<vector<T> > net_to_block_ids(bool include_global=true) {
+        vector<vector<T> > net2block_ids(this->net_labels_.size());
         map<string, vector<string> > &b2n_labels =
                 this->block_label_to_net_labels_;
         map<string, vector<string> >::iterator block_nets_iter =
                 b2n_labels.begin();
-        map<string, int> block_label_to_index = this->block_label_to_index();
-        map<string, int> net_label_to_index = this->net_label_to_index();
+        map<string, T> block_label_to_index = this->block_label_to_index();
+        map<string, T> net_label_to_index = this->net_label_to_index();
 
         for(int i = 0; block_nets_iter != b2n_labels.end();
                 block_nets_iter++, i++) {
@@ -219,18 +220,18 @@ public:
         }
 
         for(int i = 0; i < net2block_ids.size(); i++) {
-            vector<int> &block_ids = net2block_ids[i];
+            vector<T> &block_ids = net2block_ids[i];
             sort(block_ids.begin(), block_ids.end());
         }
         return net2block_ids;
     }
 
-    map<string, vector<int> > block_ids_by_type() {
-        map<string, vector<int> > b;
+    map<string, vector<T> > block_ids_by_type() {
+        map<string, vector<T> > b;
         set<string>::iterator block_types_iter = this->block_types_.begin();
         for(; block_types_iter != this->block_types_.end();
                 block_types_iter++) {
-            b[*block_types_iter] = vector<int>();
+            b[*block_types_iter] = vector<T>();
         }
         for(int i = 0; i < this->block_type_.size(); i++) {
             string &block_type = this->block_type_[i];
@@ -240,7 +241,7 @@ public:
         for(; block_types_iter != this->block_types_.end();
                 block_types_iter++) {
             string const &block_type = *block_types_iter;
-            vector<int> &block_ids = b[block_type];
+            vector<T> &block_ids = b[block_type];
             sort(block_ids.begin(), block_ids.end());
         }
         return b;
@@ -248,13 +249,14 @@ public:
 };
 
 
-class VprNetFileParser : public VprNetParser {
+template <typename T>
+class VprNetFileParser : public VprNetParser<T> {
 public:
     string netlist_filepath_;
-    using VprNetParser::parse;
+    using VprNetParser<T>::parse;
 
     VprNetFileParser(string input_filename) :
-            VprNetParser(), netlist_filepath_(input_filename) {}
+            VprNetParser<T>(), netlist_filepath_(input_filename) {}
 
     void parse() {
         this->reset();
