@@ -103,10 +103,25 @@ cdef class cVprNetFileParser:
             for net_id in block_net_ids:
                 net_block_ids = net_to_block_indexes.setdefault(net_id, [])
                 net_block_ids.append(i)
-        return zip(*sorted(net_to_block_indexes.items()))[1]
+        return list(zip(*sorted(net_to_block_indexes.items()))[1])
 
     def block_ids_by_type(self):
         block_ids_by_type = OrderedDict([(k, []) for k in self.block_types])
         for block_id, block_type in enumerate(self.block_type):
             block_ids_by_type[block_type].append(block_id)
         return block_ids_by_type
+
+    def c_net_to_block_ids(self, include_global=True):
+        return self.thisptr.net_to_block_ids(include_global)
+
+    def c_block_to_net_ids(self, include_global=True):
+        return self.thisptr.block_to_net_ids(include_global)
+
+    def c_net_label_to_index(self):
+        return self.thisptr.net_label_to_index()
+
+    def c_block_label_to_index(self):
+        return self.thisptr.block_label_to_index()
+
+    def c_block_ids_by_type(self):
+        return self.thisptr.block_ids_by_type()

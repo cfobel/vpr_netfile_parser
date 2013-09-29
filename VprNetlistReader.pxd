@@ -31,6 +31,11 @@ cdef extern from "VprNetParser.hpp":
         vector[string] block_labels_
         vector[string] block_type_
         c_set[string] block_types_
+        vector[vector[int]] net_to_block_ids(bint include_global)
+        vector[vector[int]] block_to_net_ids(bint include_global)
+        map[string, int] net_label_to_index()
+        map[string, int] block_label_to_index()
+        map[string, vector[int]] block_ids_by_type()
 
         VprNetFileParser(string in_filename)
         void init()

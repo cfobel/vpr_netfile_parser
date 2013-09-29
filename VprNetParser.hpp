@@ -3,6 +3,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <algorithm>
 #include <string>
 #include <map>
 #include <set>
@@ -19,6 +20,17 @@ struct SubBlock {
     vector<string> pins;
     string clock_pin;
 };
+
+
+template <typename A, typename B, typename C>
+inline map<A, B> reverse_map(C &input) {
+    map<A, B> r;
+    typename C::iterator iter = input.begin();
+    for(int i = 0; iter != input.end(); iter++, i++) {
+        r[*iter] = i;
+    }
+    return r;
+}
 
 
 class VprNetParser {
@@ -143,6 +155,88 @@ public:
         global_count_ = 0;
     }
 
+    map<string, int> net_label_to_index() {
+        return reverse_map<string, int>(this->net_labels_);
+    }
+
+    map<string, int> block_label_to_index() {
+        return reverse_map<string, int>(this->block_labels_);
+    }
+
+    vector<vector<int> > block_to_net_ids(bool include_global=true) {
+        map<string, vector<string> > &b2n_labels = this->block_label_to_net_labels_;
+        map<string, int> net_label_to_index = this->net_label_to_index();
+
+        vector<vector<int> > b2n_ids(this->block_labels_.size());
+
+        vector<string>::iterator block_iter = this->block_labels_.begin();
+        for(int i = 0; block_iter != this->block_labels_.end(); block_iter++,
+                i++) {
+            vector<string> &block_net_labels = b2n_labels[*block_iter];
+            vector<string>::iterator block_net_iter = block_net_labels.begin();
+            for(; block_net_iter != block_net_labels.end(); block_net_iter++) {
+                string &net_label = *block_net_iter;
+                /*
+                 * Only include the net if it's not a global net, or if
+                 * `include_global` is set to `true`.
+                 */
+                if(include_global ||
+                   this->global_labels_.find(net_label) ==
+                   this->global_labels_.end()) {
+                    b2n_ids[i].push_back(net_label_to_index[net_label]);
+                }
+            }
+        }
+        return b2n_ids;
+    }
+
+    vector<vector<int> > net_to_block_ids(bool include_global=true) {
+        vector<vector<int> > net2block_ids(this->net_labels_.size());
+        map<string, vector<string> > &b2n_labels =
+                this->block_label_to_net_labels_;
+        map<string, vector<string> >::iterator block_nets_iter =
+                b2n_labels.begin();
+        map<string, int> block_label_to_index = this->block_label_to_index();
+        map<string, int> net_label_to_index = this->net_label_to_index();
+
+        for(int i = 0; block_nets_iter != b2n_labels.end();
+                block_nets_iter++, i++) {
+            vector<string> &block_net_labels = block_nets_iter->second;
+            vector<string>::iterator block_net_iter = block_net_labels.begin();
+            for(; block_net_iter != block_net_labels.end(); block_net_iter++) {
+                int net_index = net_label_to_index[*block_net_iter];
+                int block_index = block_label_to_index[block_nets_iter->first];
+                net2block_ids[net_index].push_back(block_index);
+            }
+        }
+
+        for(int i = 0; i < net2block_ids.size(); i++) {
+            vector<int> &block_ids = net2block_ids[i];
+            sort(block_ids.begin(), block_ids.end());
+        }
+        return net2block_ids;
+    }
+
+    map<string, vector<int> > block_ids_by_type() {
+        map<string, vector<int> > b;
+        set<string>::iterator block_types_iter = this->block_types_.begin();
+        for(; block_types_iter != this->block_types_.end();
+                block_types_iter++) {
+            b[*block_types_iter] = vector<int>();
+        }
+        for(int i = 0; i < this->block_type_.size(); i++) {
+            string &block_type = this->block_type_[i];
+            b[block_type].push_back(i);
+        }
+        block_types_iter = this->block_types_.begin();
+        for(; block_types_iter != this->block_types_.end();
+                block_types_iter++) {
+            string const &block_type = *block_types_iter;
+            vector<int> &block_ids = b[block_type];
+            sort(block_ids.begin(), block_ids.end());
+        }
+        return b;
+    }
 };
 
 
