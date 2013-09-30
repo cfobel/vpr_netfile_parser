@@ -28,4 +28,5 @@ setup(name = "vpr_netfile_parser",
     license = "GPL",
     long_description = """""",
     packages = ['vpr_netfile_parser'],
+    package_data={'vpr_netfile_parser': ['VprNetParser.hpp']},
     ext_modules=cythonize(cython_exts))
