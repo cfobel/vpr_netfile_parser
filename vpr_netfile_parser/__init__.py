@@ -51,4 +51,4 @@ def get_source_files():
 
     return [os.path.abspath(os.path.join(os.path.dirname(vpr_netfile_parser
                                                          .__file__),
-                                         'VprNetParser.c'))]
+                                         'VprNetParser_ragel.cpp'))]
