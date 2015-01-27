@@ -121,7 +121,7 @@
     # The whitespace separating words in a line.
     whitespace = [ \t];
 
-    label_char = alnum | [\[\]_:\\];
+    label_char = alnum | [.\~\^\+\[\]_:\\];
     label = (('\\' label_char) | label_char - '\\') (label_char)* $1 %0;
     funcblocktype = ('.' label) >start_funcblocktype %end_funcblocktype;
     block_label = label >start_label %end_label;
@@ -200,6 +200,10 @@ void VprNetParser<T>::ragel_parse(std::istream &in_stream) {
             if ( cs == VprNetParser_error ) {
                 /* Machine failed before finding a token. */
                 cerr << "PARSE ERROR" << endl;
+                for (int i = 0; i < buf_vector.size(); i++) {
+                    cerr << buf_vector[i];
+                }
+                cerr << endl;
                 exit(1);
             }
             if ( ts == 0 ) {
