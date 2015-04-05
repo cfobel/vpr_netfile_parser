@@ -31,5 +31,6 @@ setup(name="vpr_netfile_parser",
       long_description="""""",
       packages=['vpr_netfile_parser'],
       package_data={'vpr_netfile_parser': ['VprNetParser.hpp',
-                                           'VprNetParser.pyx']},
+                                           'VprNetParser.pyx',
+                                           'VprNetParser.pxd']},
       ext_modules=cythonize(cython_exts))
