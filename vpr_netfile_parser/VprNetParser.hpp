@@ -13,7 +13,7 @@
 
 using namespace std;
 
-#define DEF_BUFSIZE 32 << 10
+#define DEF_BUFSIZE 128 << 10
 
 struct SubBlock {
     string label;

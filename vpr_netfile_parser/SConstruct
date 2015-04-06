@@ -28,15 +28,15 @@ else:
     env.Append(CPPFLAGS=['-O3'])
 
 # Generate foo.vds from foo.txt using mk_vdu
-vpr_source = env.Ragel('VPRNetParser.rl')
-#env.Program('VPRNetParser', ['main.cpp', vpr_source])
+vpr_source = env.Ragel('VprNetParser.rl')
+#env.Program('VprNetParser', ['main.cpp', vpr_source])
 
 try:
     dot_path = check_output('which dot', shell=True).strip()
     dot_bld = Builder(action = '%s -o $TARGET -Tpdf $SOURCE' % dot_path,
                 suffix = '.pdf', src_suffix = '.dot')
     env['BUILDERS']['Dot'] = dot_bld
-    dot = env.RagelDot('VPRNetParser.rl')
+    dot = env.RagelDot('VprNetParser.rl')
     env.Dot(dot)
 except CalledProcessError:
     pass
